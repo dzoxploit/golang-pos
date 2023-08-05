@@ -20,6 +20,12 @@ func NewAuthController(db *gorm.DB) *AuthController {
 	}
 }
 
+func NewAuthControllerTest(authService *services.AuthService) *AuthController {
+	return &AuthController{
+		authService: authService,
+	}
+}
+
 func (c *AuthController) Register(ctx *gin.Context) {
 	var user models.User
 	if err := ctx.ShouldBindJSON(&user); err != nil {

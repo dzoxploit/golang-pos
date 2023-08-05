@@ -21,6 +21,12 @@ func NewProductController(db *gorm.DB) *ProductController {
 	}
 }
 
+func NewProductControllerTest(productService *services.ProductService) *ProductController {
+	return &ProductController{
+		productService: productService,
+	}
+}
+
 func (c *ProductController) CreateProduct(ctx *gin.Context) {
 	var product models.Product
 	if err := ctx.ShouldBindJSON(&product); err != nil {

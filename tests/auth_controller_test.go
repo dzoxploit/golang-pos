@@ -14,18 +14,18 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+
 func TestAuthController_Login(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
 	// Create a new Gin router
 	router := gin.New()
 
-	// Create a new mock authentication service
-	mockAuthService := &services.MockAuthService{}
-	authController := controllers.NewAuthController(mockAuthService)
+	mockAuthService := &services.AuthService{}
+    authController := controllers.NewAuthControllerTest(mockAuthService)
 
-	// Define the route
-	router.POST("/login", authController.Login)
+    // Define the route
+    router.POST("/login", authController.Login)
 
 	// Define the test case
 	t.Run("Login with valid credentials", func(t *testing.T) {
