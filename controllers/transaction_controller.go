@@ -12,7 +12,6 @@ import (
 
 type TransactionController struct {
 	transactionService *services.TransactionService
-	productService *services.ProductService
 }
 
 func NewTransactionController(db *gorm.DB) *TransactionController {
@@ -36,7 +35,7 @@ func (c *TransactionController) CreateTransaction(ctx *gin.Context) {
     }
 
     // Subtract the stock quantity of the products involved in the transaction
-    err = c.productService.UpdateProductStock(createdTransaction)
+    err = c.transactionService.UpdateProductStock(createdTransaction)
     if err != nil {
         utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Failed to update product stock")
         return

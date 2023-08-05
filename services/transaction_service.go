@@ -23,21 +23,19 @@ func (s *TransactionService) CreateTransaction(transaction *models.Transaction) 
 }
 
 func (s *TransactionService) UpdateProductStock(transaction *models.Transaction) error {
-    for _, item := range transaction.Items {
-        // Get the product by its ID
-        product, err := s.productRepository.GetProductByID(item.ProductID)
-        if err != nil {
-            return err
-        }
+    // Get the product by its ID
+    product, err := s.productRepository.GetProductByID(transaction.ProductID)
+    if err != nil {
+        return err
+    }
 
-        // Subtract the quantity from the product's stock
-        product.Quantity -= item.Quantity
+    // Subtract the transaction quantity from the product's stock
+    product.Quantity -= transaction.Quantity
 
-        // Update the product's stock in the repository
-        err = s.productRepository.UpdateProduct(product)
-        if err != nil {
-            return err
-        }
+    // Update the product's stock in the repository
+    err = s.productRepository.UpdateProduct(product)
+    if err != nil {
+        return err
     }
 
     return nil
