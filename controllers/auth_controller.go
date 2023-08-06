@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"go-pos/models"
 	"go-pos/services"
 	"go-pos/utils"
@@ -49,15 +50,45 @@ func (c *AuthController) Login(ctx *gin.Context) {
 		return
 	}
 
-	token, err := c.authService.Login(user.Username, user.Password)
+
+	// Authenticate the user
+	jwtToken, err := c.authService.Login(user.Username, user.Password)
 	if err != nil {
-		utils.SendErrorResponse(ctx, http.StatusUnauthorized, "Invalid credentials")
+		if err == services.ErrUserNotFound {
+			utils.SendErrorResponse(ctx, http.StatusUnauthorized, "User not found")
+		} else if err == services.ErrInvalidPassword {
+			utils.SendErrorResponse(ctx, http.StatusUnauthorized, "Invalid password")
+		} else {
+			utils.SendErrorResponse(ctx, http.StatusInternalServerError, "Failed to authenticate")
+		}
 		return
 	}
 
-	utils.SendSuccessResponse(ctx, http.StatusOK, "Login successful", gin.H{"token": token})
+	// Include the token in the response
+	utils.SendSuccessResponse(ctx, http.StatusOK, "Login successful", gin.H{"token": jwtToken})
 }
 
 func (c *AuthController) ValidateToken(ctx *gin.Context) {
-	utils.SendSuccessResponse(ctx, http.StatusOK, "Valid token", nil)
+	// Get the token from the request header
+	tokenString := ctx.GetHeader("Authorization")
+	if tokenString == "" {
+		utils.SendErrorResponse(ctx, http.StatusUnauthorized, "Authorization token missing")
+		return
+	}
+
+	fmt.Println(tokenString)
+
+	// Validate the token using the ValidateToken function from utils
+	claims, err := utils.ValidateToken(tokenString)
+	if err != nil {
+		utils.SendErrorResponse(ctx, http.StatusUnauthorized, "Invalid token")
+		return
+	}
+
+	// You can perform further actions based on the user's identity
+	// For example, fetch user details from the database based on userID
+	// user, err := c.authService.GetUserByID(claims.Uid)
+
+	// Respond with user information (This is just for demonstration)
+	utils.SendSuccessResponse(ctx, http.StatusOK, "Valid token", gin.H{"user_id": claims.Uid})
 }

@@ -1,6 +1,7 @@
 package services
 
 import (
+	"fmt"
 	"go-pos/models"
 	"go-pos/repositories"
 
@@ -15,6 +16,7 @@ type TransactionService struct {
 func NewTransactionService(db *gorm.DB) *TransactionService {
 	return &TransactionService{
 		transactionRepository: repositories.NewTransactionRepository(db),
+		productRepository: repositories.NewProductRepository(db),
 	}
 }
 
@@ -29,6 +31,7 @@ func (s *TransactionService) UpdateProductStock(transaction *models.Transaction)
         return err
     }
 
+	fmt.Println(product.Quantity)
     // Subtract the transaction quantity from the product's stock
     product.Quantity -= transaction.Quantity
 

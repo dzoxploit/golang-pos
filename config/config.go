@@ -9,7 +9,7 @@ import (
 
 func NewDB() (*gorm.DB, error) {
 	// Replace the database connection details with your actual MySQL database credentials
-	dbURI := "user:password@tcp(localhost:3306)/dbname?charset=utf8&parseTime=True&loc=Local"
+	dbURI := "root:@tcp(localhost:3306)/gopos?charset=utf8&parseTime=True&loc=Local"
 
 	db, err := gorm.Open("mysql", dbURI)
 	if err != nil {

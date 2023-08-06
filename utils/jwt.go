@@ -2,7 +2,9 @@ package utils
 
 import (
 	"errors"
-	"strconv"
+	"fmt"
+	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -10,48 +12,76 @@ import (
 )
 
 // JWTSecretKey is the secret key used to sign JWT tokens. This should be kept secure and should not be hard-coded in production.
-var JWTSecretKey = []byte("your-secret-key")
 
 var ErrInvalidCredentials = errors.New("invalid credentials")
 
+type SignedDetails struct {
+    Uid        uint
+    Username   string
+    jwt.StandardClaims
+}
+
+func GetJWTSecretKey() ([]byte, error) {
+	secretKey := os.Getenv("JWT_SECRET_KEY")
+	if secretKey == "" {
+		return nil, errors.New("JWT secret key not set")
+	}
+	return []byte(secretKey), nil
+}
+
 // GenerateToken generates a new JWT token with the given user ID as the subject.
-func GenerateToken(userID uint) (string, error) {
-	expirationTime := time.Now().Add(1 * time.Hour)
-
-	claims := &jwt.StandardClaims{
-		Subject:   strconv.Itoa(int(userID)),
-		ExpiresAt: expirationTime.Unix(),
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Sign the token with the secret key
-	tokenString, err := token.SignedString(JWTSecretKey)
+func GenerateToken(userID uint, username string) (signedToken string, err error) {
+	
+	claims := &SignedDetails{
+        Uid:        userID,
+        Username:  username,
+        StandardClaims: jwt.StandardClaims{
+            ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
+        },
+    }
+	
+ 
+	secretKey, err := GetJWTSecretKey()
 	if err != nil {
-		return "", err
+		log.Panic(err)
+		return
 	}
 
-	return tokenString, nil
+	token, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString(secretKey)
+    
+	if err != nil {
+		log.Panic(err)
+		return
+	}
+	
+    return token, err
 }
 
 // ValidateToken validates the provided JWT token and returns the token object if it's valid.
-func ValidateToken(tokenString string) (*jwt.Token, error) {
-	// Parse the token with the provided secret key
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		return JWTSecretKey, nil
-	})
+func ValidateToken(signedToken string) (claims *SignedDetails, err error) {
+    token, err := jwt.ParseWithClaims(
+        signedToken,
+        &SignedDetails{},
+        func(token *jwt.Token) (interface{}, error) {
+            return GetJWTSecretKey()
+        },
+    )
 
-	if err != nil {
-		return nil, err
-	}
-
-	if !token.Valid {
-		return nil, errors.New("invalid token")
-	}
-
-	return token, nil
+    if err != nil {
+        return nil, err
+    }
+ 
+    claims, ok := token.Claims.(*SignedDetails)
+    if !ok {
+		
+        return nil, fmt.Errorf("the token is invalid")
+    }
+ 
+    if claims.ExpiresAt < time.Now().Local().Unix() {
+        return nil, fmt.Errorf("token is expired")
+    }
+    return claims, nil
 }
-
 // HashPassword hashes the provided password using a secure hashing algorithm (bcrypt).
 func HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)

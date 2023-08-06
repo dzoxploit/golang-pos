@@ -1,13 +1,38 @@
 package main
 
 import (
+	"crypto/rand"
+	"encoding/base64"
+	"fmt"
 	"go-pos/config"
 	"go-pos/controllers"
+	"go-pos/middlewares"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
 
+func generateRandomKey() (string, error) {
+	key := make([]byte, 32) // 32 bytes for a secure key
+	_, err := rand.Read(key)
+	if err != nil {
+		return "", err
+	}
+	return base64.StdEncoding.EncodeToString(key), nil
+}
+
 func main() {
+	secretKey, err := generateRandomKey()
+	if err != nil {
+		fmt.Println("Failed to generate JWT secret key:", err)
+		return
+	}
+
+	// Set the secret key as an environment variable
+	os.Setenv("JWT_SECRET_KEY", secretKey)
+	
+	gin.SetMode(gin.ReleaseMode)
+	
 	r := gin.Default()
 
 	// Set up the database connection
@@ -22,15 +47,20 @@ func main() {
 	productController := controllers.NewProductController(db)
 	transactionController := controllers.NewTransactionController(db)
 
+
+	
 	// Register the API routes
-	api := r.Group("/api")
-	{
-		authRoutes := api.Group("/auth")
+
+	authRoutes := r.Group("/auth")
 		{
 			authRoutes.POST("/register", authController.Register)
 			authRoutes.POST("/login", authController.Login)
 			authRoutes.GET("/validate", authController.ValidateToken)
 		}
+
+	api := r.Group("/api")
+	api.Use(middlewares.Authenticate())
+	{
 
 		productRoutes := api.Group("/products")
 		{
@@ -49,5 +79,5 @@ func main() {
 	}
 
 	// Start the server
-	r.Run(":8080")
+	r.Run(":7000")
 }
