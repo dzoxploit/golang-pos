@@ -20,7 +20,7 @@ func NewDB() (*gorm.DB, error) {
 	db.LogMode(true)
 
 	// AutoMigrate will automatically create the database tables based on the models
-	db.AutoMigrate(&models.User{}, &models.Product{}, &models.Transaction{})
+	db.AutoMigrate(&models.User{}, &models.Product{}, &models.Transaction{}, &models.Person{})
 
 	return db, nil
 }

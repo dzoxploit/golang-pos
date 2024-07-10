@@ -20,7 +20,7 @@
           "raw": "{\"username\":\"testuser\",\"password\":\"testpassword\"}"
         },
         "url": {
-          "raw": "http://localhost:7000/auth/register",
+          "raw": "http://localhost:7000/api/auth/register",
           "protocol": "http",
           "host": ["localhost"],
           "port": "7000",
@@ -44,7 +44,7 @@
           "raw": "{\"username\":\"testuser\",\"password\":\"testpassword\"}"
         },
         "url": {
-          "raw": "http://localhost:7000/auth/login",
+          "raw": "http://localhost:7000/api/auth/login",
           "protocol": "http",
           "host": ["localhost"],
           "port": "7000",
@@ -64,7 +64,7 @@
           }
         ],
         "url": {
-          "raw": "http://localhost:7000/auth/validate",
+          "raw": "http://localhost:7000/api/auth/validate",
           "protocol": "http",
           "host": ["localhost"],
           "port": "7000",
@@ -195,6 +195,121 @@
       "request": {
         "method": "GET",
         "header": []
+      },
+      "response": []
+    },
+    {
+      "name": "List Persons",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_jwt_token_here"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:7000/api/persons",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7000",
+          "path": ["api", "persons"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Create Person",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer your_jwt_token_here"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"John Doe\",\"age\":28}"
+        },
+        "url": {
+          "raw": "http://localhost:7000/api/persons",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7000",
+          "path": ["api", "persons"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Get Person By Id",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_jwt_token_here"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:7000/api/persons/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7000",
+          "path": ["api", "persons", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Update Person",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer your_jwt_token_here"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"name\":\"Updated Person\",\"age\":29}"
+        },
+        "url": {
+          "raw": "http://localhost:7000/api/persons/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "7000",
+          "path": ["api", "persons", "1"]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Delete Person",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer your_jwt_token_here"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:7000/api/persons/1",
+          "protocol": "http",
+          "host": "7000",
+          "path": ["api", "persons", "1"]
+        }
       },
       "response": []
     }

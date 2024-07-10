@@ -35,7 +35,6 @@ func main() {
 	
 	r := gin.Default()
 
-	// Set up the database connection
 	db, err := config.NewDB()
 	if err != nil {
 		panic("failed to connect to database")
@@ -46,6 +45,7 @@ func main() {
 	authController := controllers.NewAuthController(db)
 	productController := controllers.NewProductController(db)
 	transactionController := controllers.NewTransactionController(db)
+	personController := controllers.NewPersonController(db)
 
 
 	
@@ -75,6 +75,15 @@ func main() {
 		{
 			transactionRoutes.POST("/", transactionController.CreateTransaction)
 			transactionRoutes.GET("/", transactionController.ListTransactions)
+		}
+
+		personRoutes := api.Group("/persons")
+		{
+			personRoutes.GET("/", personController.ListPersons)
+			personRoutes.POST("/create", personController.CreatePerson)
+			personRoutes.GET("/:id", personController.GetPerson)
+			personRoutes.PUT("/:id", personController.UpdatePerson)
+			personRoutes.DELETE("/:id", personController.DeletePerson)
 		}
 	}
 

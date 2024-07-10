@@ -56,4 +56,6 @@ Setelah itu jalankan perintah
 docker-compose build
 docker-compose up
 
+Setalah itu import database di phpmyadmin atau sql file namun jika menggunakan docker import database dibagian image docker-mariadb untuk akses database
+
 setelah itu import postman collection untuk menjalankan api yang sudah terdokumentasi terima kasih :)

@@ -48,11 +48,6 @@ func (s *AuthService) Login(username, password string) (string, error) {
 		return "", err
 	}
 
-	
-	if err != nil {
-		return "", nil 
-	}
-
 	// Check if the provided password matches the hashed password in the database
 	passwordIsValid := utils.CheckPasswordHash(password, user.Password)
 
